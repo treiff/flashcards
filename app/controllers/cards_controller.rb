@@ -1,7 +1,9 @@
 class CardsController < ApplicationController
+  before_filter :authenticate
+
   def show
     @deck = find_deck
-    @card = @deck.cards.find(params[:id])
+    @card = find_card(@deck)
   end
 
   def new
@@ -18,19 +20,19 @@ class CardsController < ApplicationController
 
   def edit
     @deck = find_deck
-    @card = @deck.cards.find(params[:id])
+    @card = find_card(@deck)
   end
 
   def update
     @deck = find_deck
-    @card = @deck.cards.find(params[:id])
+    @card = find_card(@deck)
     @card.update_attributes(card_params)
     redirect_to @deck
   end
 
   def destroy
     @deck = find_deck
-    @card = @deck.cards.find(params[:id])
+    @card = find_card(@deck)
     @card.destroy
     redirect_to @deck
   end
@@ -38,7 +40,11 @@ class CardsController < ApplicationController
   private
 
   def find_deck
-    Deck.find(params[:deck_id])
+    current_user.decks.find(params[:deck_id])
+  end
+
+  def find_card(deck)
+    deck.cards.find(params[:id])
   end
 
   def card_params

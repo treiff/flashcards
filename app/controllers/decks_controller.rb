@@ -1,35 +1,37 @@
 class DecksController < ApplicationController
+  before_filter :authenticate
+
   def index
-    @decks = Deck.all
+    @decks = current_user.decks
   end
 
   def show
-    @deck = Deck.find(params[:id])
+    @deck = find_deck
     @cards = @deck.cards
   end
 
   def new
-    @deck = Deck.new
+    @deck = current_user.decks.new
   end
 
   def create
-    @deck = Deck.new(deck_params)
+    @deck = current_user.decks.new(deck_params)
     @deck.save
     redirect_to decks_path
   end
 
   def edit
-    @deck = Deck.find(params[:id])
+    @deck = find_deck
   end
 
   def update
-    @deck = Deck.find(params[:id])
+    @deck = find_deck
     @deck.update_attributes(deck_params)
     redirect_to @deck
   end
 
   def destroy
-    @deck = Deck.find(params[:id])
+    @deck = find_deck
     @deck.destroy
     redirect_to decks_path
   end
@@ -38,5 +40,9 @@ class DecksController < ApplicationController
 
   def deck_params
     params.require(:deck).permit(:id, :name)
+  end
+
+  def find_deck
+    current_user.decks.find(params[:id])
   end
 end
